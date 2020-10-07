@@ -45,7 +45,7 @@
     "flow-copy-source": "^2.0.9",
     "jest": "^26.0.1",
     "react": "^16.13.1",
-    "react-native": "^0.63.0-rc.1",
+    "react-native": "^0.63.3",
     "react-test-renderer": "^16.13.1",
     "release-it": "^13.6.0",
     "strip-ansi": "^6.0.0",
@@ -74,6 +74,7 @@
       "js",
       "json"
     ],
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "testPathIgnorePatterns": ["timerUtils"]
   }
 }

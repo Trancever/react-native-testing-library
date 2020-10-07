@@ -3,6 +3,7 @@
 import * as React from 'react';
 import act from './act';
 import { throwRemovedFunctionError } from './helpers/errors';
+import { setTimeout } from './helpers/getTimerFuncs';
 
 const DEFAULT_TIMEOUT = 4500;
 const DEFAULT_INTERVAL = 50;
@@ -24,20 +25,24 @@ function waitForInternal<T>(
   options?: WaitForOptions
 ): Promise<T> {
   const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
-  const interval = options?.interval ?? DEFAULT_INTERVAL;
-  const startTime = Date.now();
+  let interval = options?.interval ?? DEFAULT_INTERVAL;
+
+  if (interval < 1) interval = 1;
+  const maxTries = Math.ceil(timeout / interval);
+  let tries = 0;
 
   return new Promise((resolve, reject) => {
     const rejectOrRerun = (error) => {
-      if (Date.now() - startTime >= timeout) {
+      if (tries > maxTries) {
         reject(error);
         return;
       }
       setTimeout(runExpectation, interval);
     };
     function runExpectation() {
+      tries += 1;
       try {
-        const result = expectation();
+        const result = Promise.resolve(expectation());
         resolve(result);
       } catch (error) {
         rejectOrRerun(error);
